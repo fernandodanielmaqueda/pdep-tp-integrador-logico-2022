@@ -66,7 +66,61 @@ cambiaron(bobby, [2], flor, [4, 6]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% Implementar nuevos predicados aquí...
+%% Punto 2
+%% figurita(2, brillante(TipoDeImagen, Personaje))
+%% figurita(5, basica([ListaDePersonajes])).
+%% figurita(6, rompecabezas(nombreDeRompecabezas, [ListaDeFiguritas])).
+
+figurita(1, basica([kitty, keroppi])).
+figurita(2, brillante(metalizado, kitty)).
+figurita(3, brillante(metalizado, melody)).
+figurita(4,basica([])).
+figurita(5, rompecabezas(kittyYCompania, [5, 6 , 7])).
+figurita(6, rompecabezas(kittyYCompania, [5, 6, 7])).
+figurita(7, rompecabezas(kittyYCompania, [5, 6 , 7])).
+figurita(8, basica([kitty, melody, keroppi,cinnamoroll, pompompurin, littleTwinStars, badtzMaru, gudetama])).
+
+% todosLosPersonajes = [kitty, melody, keroppi,cinnamoroll, pompompurin, littleTwinStars, badtzMaru, gudetama]. Probablemente un findall ??? 
+
+%% Punto  1
+tieneFiguritaRepetida(Persona, NumeroFigurita):-
+  consiguio(Persona, NumeroFigurita, Medio1),
+  consiguio(Persona, NumeroFigurita, Medio2),
+  Medio1 \= Medio2.
+
+%% Punto 3
+
+% A partir de esta nueva información, 
+% definir un predicado que permita saber si una figurita es valiosa, 
+% que se cumple si es rara (son raras aquellas figuritas que nadie tiene repetidas) o si el nivel de atractivo de su imagen es mayor a 7.
+
+esValiosa(NumeroFigurita):-
+  figurita(NumeroFigurita, _),
+  esRara(NumeroFigurita).
+
+esValiosa(NumeroFigurita):-
+  figurita(NumeroFigurita, TipoFigurita),
+  nivelDeAtractivo(TipoFigurita, Atractivo),
+  Atractivo > 7.
+
+esRara(NumeroFigurita):-
+  forall(consiguio(Persona,NumeroFigurita,_), not(tieneFiguritaRepetida(Persona,NumeroFigurita))).
+
+nivelDeAtractivo(brillante(_,Personaje),Atractivo):-
+  popularidad(Personaje, NivelDePopularidad),
+  Atractivo is NivelDePopularidad * 5.
+
+nivelDeAtractivo(rompecabezas(_,ListaDePartes), 2):-
+  length(ListaDePartes, Cantidad),
+  Cantidad =< 2.
+  
+nivelDeAtractivo(rompecabezas(_,ListaDePartes), 0):-
+  length(ListaDePartes, Cantidad),
+  Cantidad > 2.
+
+%% nivelDeAtractivo(basico(ListaDePersonajes), Atractivo).
+
+
 
 
 
@@ -99,4 +153,5 @@ test(cuandoDosPersonasCambianFiguritasAmbasConsiguenFiguritasPorCanjeConLaOtraIn
 
 :- end_tests(consiguio).
 
-%% Tests de requerimiento, implementar aquí...
+:- begin_tests(esValiosa).
+%% Testeo de consultas que esperan que sean ciertas
