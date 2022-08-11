@@ -3,9 +3,7 @@
 Integrantes:
 
 - Javier Federico García
-- **Completar con nombre y apellido**
-- **Completar con nombre y apellido**
-- **Completar con nombre y apellido**
+- Fernando Daniel Maqueda
 
 ## Consignas
 
