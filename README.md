@@ -2,7 +2,7 @@
 
 Integrantes:
 
-- **Completar con nombre y apellido**
+- Javier Federico García
 - **Completar con nombre y apellido**
 - **Completar con nombre y apellido**
 - **Completar con nombre y apellido**
