@@ -120,6 +120,24 @@ nivelDeAtractivo(rompecabezas(_,ListaDePartes), 0):-
 
 %% nivelDeAtractivo(basico(ListaDePersonajes), Atractivo).
 
+%% Punto 4 Relacionar a una persona con la imagen más atractiva de las figuritas que consiguió.
+
+imagenMasAtractivaQueTiene(Persona, ImagenMasAtractiva):-
+  consiguio(Persona, _,_),
+  consiguio(_,NroFiguritaMasAtractiva,_),
+  figurita(NroFiguritaMasAtractiva, ImagenMasAtractiva),
+  forall((consiguio(Persona, NroFigurita,_), NroFigurita \= NroFiguritaMasAtractiva), tieneLaImagenMasAtractiva(NroFiguritaMasAtractiva, NroFigurita)).
+
+
+tieneLaImagenMasAtractiva(NroFiguritaMasAtractiva, NroFigurita):-
+  figurita(NroFiguritaMasAtractiva, ImagenMasAtractiva),
+  figurita(NroFigurita, Imagen),
+  nivelDeAtractivo(ImagenMasAtractiva, Atractivo1),
+  nivelDeAtractivo(Imagen, Atractivo2),
+  Atractivo1 > Atractivo2,
+  NroFiguritaMasAtractiva \= NroFigurita.
+
+  
 
 
 
