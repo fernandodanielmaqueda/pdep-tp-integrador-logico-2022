@@ -206,9 +206,6 @@ test(numeroFiguritaDetieneFiguritaRepetidaEsInversible, set(NumeroFigurita == [5
 
 :- end_tests(figuritasRepetidas).
 
-:- begin_tests(figuritas).
-:- end_tests(figuritas).
-
 :- begin_tests(esValiosa).
 
 test(laFigurita7EsValiosaPorSerRara, nondet):-
