@@ -65,83 +65,96 @@ cambiaron(andy, [4,7], flor, [1]).
 cambiaron(bobby, [2], flor, [4, 6]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Nuevos predicados implementados
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% Punto 2
-%% figurita(2, brillante(TipoDeImagen, Personaje))
-%% figurita(5, basica([ListaDePersonajes])).
-%% figurita(6, rompecabezas(nombreDeRompecabezas, [ListaDeFiguritas])).
-
-figurita(1, basica([kitty, keroppi])).
-figurita(2, brillante(metalizado, kitty)).
-figurita(3, brillante(metalizado, melody)).
-figurita(4,basica([])).
-figurita(5, rompecabezas(kittyYCompania, [5, 6 , 7])).
-figurita(6, rompecabezas(kittyYCompania, [5, 6, 7])).
-figurita(7, rompecabezas(kittyYCompania, [5, 6 , 7])).
-figurita(8, basica([kitty, melody, keroppi,cinnamoroll, pompompurin, littleTwinStars, badtzMaru, gudetama])).
-
-% todosLosPersonajes = [kitty, melody, keroppi,cinnamoroll, pompompurin, littleTwinStars, badtzMaru, gudetama]. Probablemente un findall ??? 
-
-%% Punto  1
+%% Punto 1
 tieneFiguritaRepetida(Persona, NumeroFigurita):-
   consiguio(Persona, NumeroFigurita, Medio1),
   consiguio(Persona, NumeroFigurita, Medio2),
   Medio1 \= Medio2.
 
-%% Punto 3
+%% Punto 2
+%% figurita(Numero, brillante(Fondo, PersonajePrincipal))
+%% figurita(Numero, rompecabezas(Nombre, [FiguritasQueLoConforman])).
+%% figurita(Numero, basica([PersonajesIncluidos])).
 
-% A partir de esta nueva información, 
-% definir un predicado que permita saber si una figurita es valiosa, 
-% que se cumple si es rara (son raras aquellas figuritas que nadie tiene repetidas) o si el nivel de atractivo de su imagen es mayor a 7.
+figurita(1, basica([kitty, keroppi])).
+figurita(2, brillante(metalizado, kitty)).
+figurita(3, brillante(metalizado, melody)).
+figurita(4, basica([])).
+figurita(Numero, rompecabezas(kittyYCompania, Figuritas)):-
+  between(5, 7, Numero),
+  findall(Figurita, between(5, 7, Figurita), Figuritas).
+figurita(8, basica(TodosLosPersonajes)):-
+  findall(Personaje, popularidad(Personaje, _), TodosLosPersonajes).
+
+%% Punto 3
 
 esValiosa(NumeroFigurita):-
   figurita(NumeroFigurita, _),
   esRara(NumeroFigurita).
 
 esValiosa(NumeroFigurita):-
-  figurita(NumeroFigurita, TipoFigurita),
-  nivelDeAtractivo(TipoFigurita, Atractivo),
+  figurita(NumeroFigurita, ImagenFigurita),
+  nivelDeAtractivo(ImagenFigurita, Atractivo),
   Atractivo > 7.
 
 esRara(NumeroFigurita):-
   forall(consiguio(Persona,NumeroFigurita,_), not(tieneFiguritaRepetida(Persona,NumeroFigurita))).
 
-nivelDeAtractivo(brillante(_,Personaje),Atractivo):-
-  popularidad(Personaje, NivelDePopularidad),
-  Atractivo is NivelDePopularidad * 5.
+nivelDeAtractivo(brillante(_, PersonajePrincipal), Atractivo):-
+  popularidad(PersonajePrincipal, NivelDePopularidad),
+  Atractivo is 5 * NivelDePopularidad.
 
-nivelDeAtractivo(rompecabezas(_,ListaDePartes), 2):-
-  length(ListaDePartes, Cantidad),
+nivelDeAtractivo(basica(PersonajesIncluidos), Atractivo):-
+  findall(Popularidad, (member(Personaje, PersonajesIncluidos), popularidad(Personaje, Popularidad)), Popularidades),
+  sum_list(Popularidades, Atractivo).
+
+nivelDeAtractivo(rompecabezas(_, Partes), 2):-
+  length(Partes, Cantidad),
   Cantidad =< 2.
   
-nivelDeAtractivo(rompecabezas(_,ListaDePartes), 0):-
-  length(ListaDePartes, Cantidad),
+nivelDeAtractivo(rompecabezas(_, Partes), 0):-
+  length(Partes, Cantidad),
   Cantidad > 2.
 
-%% nivelDeAtractivo(basico(ListaDePersonajes), Atractivo).
-
-%% Punto 4 Relacionar a una persona con la imagen más atractiva de las figuritas que consiguió.
+%% Punto 4
 
 imagenMasAtractivaQueTiene(Persona, ImagenMasAtractiva):-
-  consiguio(Persona, _,_),
-  consiguio(_,NroFiguritaMasAtractiva,_),
-  figurita(NroFiguritaMasAtractiva, ImagenMasAtractiva),
-  forall((consiguio(Persona, NroFigurita,_), NroFigurita \= NroFiguritaMasAtractiva), tieneLaImagenMasAtractiva(NroFiguritaMasAtractiva, NroFigurita)).
+  consiguio(Persona, NumeroFiguritaMasAtractiva,_),
+  figurita(NumeroFiguritaMasAtractiva, ImagenMasAtractiva),
+  forall((consiguio(Persona, OtroNumeroFigurita,_), OtroNumeroFigurita \= NumeroFiguritaMasAtractiva), esMasAtractivaQue(NumeroFiguritaMasAtractiva, OtroNumeroFigurita)).
 
-
-tieneLaImagenMasAtractiva(NroFiguritaMasAtractiva, NroFigurita):-
-  figurita(NroFiguritaMasAtractiva, ImagenMasAtractiva),
-  figurita(NroFigurita, Imagen),
+esMasAtractivaQue(NumeroFiguritaMasAtractiva, OtroNumeroFigurita):-
+  figurita(NumeroFiguritaMasAtractiva, ImagenMasAtractiva),
+  figurita(OtroNumeroFigurita, OtraImagen),
+  NumeroFiguritaMasAtractiva \= OtroNumeroFigurita,
   nivelDeAtractivo(ImagenMasAtractiva, Atractivo1),
-  nivelDeAtractivo(Imagen, Atractivo2),
-  Atractivo1 > Atractivo2,
-  NroFiguritaMasAtractiva \= NroFigurita.
+  nivelDeAtractivo(OtraImagen, Atractivo2),
+  Atractivo1 > Atractivo2.
 
-  
+%% Punto 5
 
+hizoNegocio(Persona, canje(Canjeante, ACambio)):-
+  consiguio(Persona, Figurita, canje(Canjeante, ACambio)),
+  esValiosa(Figurita),
+  forall(member(FiguritaQueDio, ACambio), not(esValiosa(FiguritaQueDio))).
 
+%% Punto 6
 
+necesita(Persona, NumeroFigurita):-
+  consiguio(Persona, _, _),
+  figurita(NumeroFigurita, _),
+  not(consiguio(Persona, NumeroFigurita, _)),
+  forall((figurita(OtroNumeroFigurita, _), OtroNumeroFigurita \= NumeroFigurita), consiguio(Persona, OtroNumeroFigurita, _)).
 
+necesita(Persona, NumeroFigurita):-
+    consiguio(Persona, _, _),
+    figurita(NumeroFigurita, rompecabezas(Nombre, Partes)),
+    not(consiguio(Persona, NumeroFigurita, _)),
+    figurita(OtroNumeroFigurita, rompecabezas(Nombre, Partes)),
+    consiguio(Persona, OtroNumeroFigurita, _).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Pruebas
