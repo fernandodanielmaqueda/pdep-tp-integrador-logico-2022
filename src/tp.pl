@@ -46,6 +46,12 @@ consiguio(bobby, 5, paquete(1)).
 consiguio(bobby, 7, paquete(2)).
 consiguio(bobby, 5, paquete(2)).
 
+% Para testeo
+consiguio(flor, 2, paquete(4)).
+
+consiguio(andy, 3, paquete(4)).
+consiguio(andy, 5, paquete(4)).
+
 consiguio(Persona, Figurita, canje(Canjeante, ACambio)):-
   cambiaron(Persona, ACambio, Canjeante, FiguritasQueRecibio), 
   member(Figurita, FiguritasQueRecibio).
@@ -114,7 +120,7 @@ nivelDeAtractivo(basica(PersonajesIncluidos), Atractivo):-
 nivelDeAtractivo(rompecabezas(_, Partes), 2):-
   length(Partes, Cantidad),
   Cantidad =< 2.
-  
+
 nivelDeAtractivo(rompecabezas(_, Partes), 0):-
   length(Partes, Cantidad),
   Cantidad > 2.
@@ -184,5 +190,88 @@ test(cuandoDosPersonasCambianFiguritasAmbasConsiguenFiguritasPorCanjeConLaOtraIn
 
 :- end_tests(consiguio).
 
+:- begin_tests(figuritasRepetidas).
+
+test(andyTieneRepetidaLaFigurita1, nondet):-
+  tieneFiguritaRepetida(andy, 1).
+
+test(andyNoTieneRepetidaLaFigurita7, fail):-
+  tieneFiguritaRepetida(andy, 7).
+
+test(personaDetieneFiguritaRepetidaEsInversible, set(Persona == [flor, bobby])):-
+  tieneFiguritaRepetida(Persona, 5).
+
+test(numeroFiguritaDetieneFiguritaRepetidaEsInversible, set(NumeroFigurita == [5])):-
+  tieneFiguritaRepetida(bobby, NumeroFigurita).
+
+:- end_tests(figuritasRepetidas).
+
+:- begin_tests(figuritas).
+:- end_tests(figuritas).
+
 :- begin_tests(esValiosa).
-%% Testeo de consultas que esperan que sean ciertas
+
+test(laFigurita7EsValiosaPorSerRara, nondet):-
+  esValiosa(7).
+
+test(laFigurita2EsValiosaPorSerAtractiva, nondet):-
+  esValiosa(2).
+
+test(laFigurita6NoEsValiosa, fail):-
+  esValiosa(6).
+
+test(esValiosaEsInversible, set(NumeroFigurita == [3, 7, 8, 2])):-
+  esValiosa(NumeroFigurita).
+
+:- end_tests(esValiosa).
+
+:- begin_tests(imagenMasAtractiva).
+
+test(laImagenMasAtractivaQueTieneAndyEsUnaBrillante, nondet):-
+  imagenMasAtractivaQueTiene(andy, brillante(metalizado, kitty)).
+
+test(laImagenMasAtractivaQueTieneAndyNoEsUnRompecabezas, fail):-
+  imagenMasAtractivaQueTiene(andy, rompecabezas(kittyYCompania, [5, 6, 7])).
+
+test(personaDeimagenMasAtractivaQueTieneEsInversible, set(Persona == [andy, flor])):-
+  imagenMasAtractivaQueTiene(Persona, brillante(metalizado, kitty)).
+
+test(imagenMasAtractivaDeimagenMasAtractivaQueTieneEsInversible, set(ImagenMasAtractiva == [brillante(metalizado, kitty)])):-
+  imagenMasAtractivaQueTiene(andy, ImagenMasAtractiva).
+
+:- end_tests(imagenMasAtractiva).
+
+:- begin_tests(hizoNegocio).
+
+test(florHizoNegocioConElCanjeConBobby, nondet):-
+  hizoNegocio(flor, canje(bobby, [4, 6])).
+
+test(bobbyNoHizoNegocioConElCanjeConFlor, fail):-
+  hizoNegocio(bobby, canje(flor, [1])).
+
+test(personaDehizoNegocioEsInversible, set(Persona == [flor])):-
+  hizoNegocio(Persona, canje(bobby, [4, 6])).
+
+test(medioDehizoNegocioEsInversible, set(Medio == [canje(andy, [1]), canje(bobby, [4, 6])])):-
+  hizoNegocio(flor, Medio).
+
+:- end_tests(hizoNegocio).
+
+:- begin_tests(necesitaFigurita).
+
+test(andyNecesitaLa8PorqueYaConsiguioTodasLasOtrasFiguritasDelAlbum, nondet):-
+  necesita(andy, 8).
+
+test(florNecesitaLa6PorqueLeFaltaYFormaParteDeUnRompecabezasQueYaComenzo, nondet):-
+  necesita(flor, 6).
+
+test(andyNoNecesitaLa3, fail):-
+  necesita(andy, 3).
+
+test(personaDenecesitaEsInversible, set(Persona == [andy])):-
+  necesita(Persona, 8).
+
+test(numeroFiguritaDenecesitaEsInversible, set(NumeroFigurita == [8])):-
+  necesita(andy, NumeroFigurita).
+
+:- end_tests(necesitaFigurita).
