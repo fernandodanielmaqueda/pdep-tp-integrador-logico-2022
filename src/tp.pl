@@ -75,12 +75,14 @@ cambiaron(bobby, [2], flor, [4, 6]).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Punto 1
+
 tieneFiguritaRepetida(Persona, NumeroFigurita):-
   consiguio(Persona, NumeroFigurita, Medio1),
   consiguio(Persona, NumeroFigurita, Medio2),
   Medio1 \= Medio2.
 
 %% Punto 2
+
 %% figurita(Numero, brillante(Fondo, PersonajePrincipal))
 %% figurita(Numero, rompecabezas(Nombre, [FiguritasQueLoConforman])).
 %% figurita(Numero, basica([PersonajesIncluidos])).
@@ -135,7 +137,6 @@ imagenMasAtractivaQueTiene(Persona, ImagenMasAtractiva):-
 esMasAtractivaQue(NumeroFiguritaMasAtractiva, OtroNumeroFigurita):-
   figurita(NumeroFiguritaMasAtractiva, ImagenMasAtractiva),
   figurita(OtroNumeroFigurita, OtraImagen),
-  NumeroFiguritaMasAtractiva \= OtroNumeroFigurita,
   nivelDeAtractivo(ImagenMasAtractiva, Atractivo1),
   nivelDeAtractivo(OtraImagen, Atractivo2),
   Atractivo1 > Atractivo2.
@@ -143,8 +144,8 @@ esMasAtractivaQue(NumeroFiguritaMasAtractiva, OtroNumeroFigurita):-
 %% Punto 5
 
 hizoNegocio(Persona, canje(Canjeante, ACambio)):-
-  consiguio(Persona, Figurita, canje(Canjeante, ACambio)),
-  esValiosa(Figurita),
+  consiguio(Persona, NumeroFigurita, canje(Canjeante, ACambio)),
+  esValiosa(NumeroFigurita),
   forall(member(FiguritaQueDio, ACambio), not(esValiosa(FiguritaQueDio))).
 
 %% Punto 6
@@ -152,15 +153,19 @@ hizoNegocio(Persona, canje(Canjeante, ACambio)):-
 necesita(Persona, NumeroFigurita):-
   consiguio(Persona, _, _),
   figurita(NumeroFigurita, _),
-  not(consiguio(Persona, NumeroFigurita, _)),
+  leFalta(Persona, NumeroFigurita),
+  esMuyImportantePara(Persona, NumeroFigurita).
+
+leFalta(Persona, NumeroFigurita):-
+  not(consiguio(Persona, NumeroFigurita, _)).
+
+esMuyImportantePara(Persona, NumeroFigurita):-
   forall((figurita(OtroNumeroFigurita, _), OtroNumeroFigurita \= NumeroFigurita), consiguio(Persona, OtroNumeroFigurita, _)).
 
-necesita(Persona, NumeroFigurita):-
-    consiguio(Persona, _, _),
-    figurita(NumeroFigurita, rompecabezas(Nombre, Partes)),
-    not(consiguio(Persona, NumeroFigurita, _)),
-    figurita(OtroNumeroFigurita, rompecabezas(Nombre, Partes)),
-    consiguio(Persona, OtroNumeroFigurita, _).
+esMuyImportantePara(Persona, NumeroFigurita):-
+  figurita(NumeroFigurita, rompecabezas(Nombre, Partes)),
+  figurita(OtroNumeroFigurita, rompecabezas(Nombre, Partes)),
+  consiguio(Persona, OtroNumeroFigurita, _).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Pruebas
